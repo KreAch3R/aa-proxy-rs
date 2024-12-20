@@ -67,7 +67,7 @@ impl UsbGadgetState {
         if let Ok(entries) = fs::read_dir(&udc_dir) {
             for entry in entries {
                 if let Ok(entry) = entry {
-                    debug!("Using UDC: {:?}", entry.file_name());
+                    info!("Using UDC: {:?}", entry.file_name());
                     if let Ok(fname) = entry.file_name().into_string() {
                         state.udc_name.push_str(fname.as_str());
                         break;
