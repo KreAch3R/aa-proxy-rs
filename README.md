@@ -143,6 +143,7 @@ OPTIONS:
     -l, --logfile <LOGFILE>           Log file path [default: /var/log/aa-proxy-rs.log]
     -s, --stats-interval <SECONDS>    Interval of showing data transfer statistics (0 = disabled)
                                       [default: 0]
+    -u, --udc <UDCNAME>               Specify UDC Controller to use
     -V, --version                     Print version information
 ```
 Most options are self explanatory, but these needs some more attention:<br>

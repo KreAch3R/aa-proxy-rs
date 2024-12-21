@@ -53,26 +53,37 @@ pub struct UsbGadgetState {
     configfs_path: PathBuf,
     udc_name: String,
     legacy: bool,
+    udc: Option<String>,
 }
 
 impl UsbGadgetState {
-    pub fn new(legacy: bool) -> UsbGadgetState {
+    pub fn new(legacy: bool, udc: Option<String>) -> UsbGadgetState {
         let mut state = UsbGadgetState {
             configfs_path: PathBuf::from("/sys/kernel/config/usb_gadget"),
             udc_name: String::new(),
             legacy,
+            udc
         };
 
-        let udc_dir = PathBuf::from("/sys/class/udc");
-        if let Ok(entries) = fs::read_dir(&udc_dir) {
-            for entry in entries {
-                if let Ok(entry) = entry {
-                    info!("Using UDC: {:?}", entry.file_name());
-                    if let Ok(fname) = entry.file_name().into_string() {
-                        state.udc_name.push_str(fname.as_str());
-                        break;
+        // If UDC argument is passed, use it, otherwise check sys
+        match state.udc {
+            None => {
+                let udc_dir = PathBuf::from("/sys/class/udc");
+                if let Ok(entries) = fs::read_dir(&udc_dir) {
+                    for entry in entries {
+                        if let Ok(entry) = entry {
+                            info!("Using UDC: {:?}", entry.file_name());
+                            if let Ok(fname) = entry.file_name().into_string() {
+                                state.udc_name.push_str(fname.as_str());
+                                break;
+                            }
+                        }
                     }
                 }
+            }
+            Some(ref udcname) => {
+                info!("Using UDC: {:?}", udcname);
+                state.udc_name.push_str(&udcname);
             }
         }
 

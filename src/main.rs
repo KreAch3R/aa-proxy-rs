@@ -57,6 +57,14 @@ struct Args {
     /// Interval of showing data transfer statistics (0 = disabled)
     #[clap(short, long, value_name = "SECONDS", default_value_t = 0)]
     stats_interval: u16,
+
+    /// UDC Controller name
+    #[clap(
+        short,
+        long
+    )]
+    udc: Option<String>,
+    
 }
 
 fn logging_init(debug: bool, log_path: &PathBuf) {
@@ -106,6 +114,7 @@ async fn tokio_main(
     advertise: bool,
     legacy: bool,
     connect: Option<Address>,
+    udc: Option<String>,
     need_restart: Arc<Notify>,
     tcp_start: Arc<Notify>,
 ) {
@@ -117,7 +126,7 @@ async fn tokio_main(
         std::thread::spawn(|| uevent_listener(accessory_started_cloned));
     }
 
-    let mut usb = UsbGadgetState::new(legacy);
+    let mut usb = UsbGadgetState::new(legacy, udc);
     loop {
         if let Err(e) = usb.init() {
             error!("{} 🔌 USB init error: {}", NAME, e);
@@ -203,6 +212,7 @@ fn main() {
             args.advertise,
             args.legacy,
             args.connect,
+            args.udc,
             need_restart,
             tcp_start,
         )
