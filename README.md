@@ -138,6 +138,7 @@ OPTIONS:
     -c, --connect <CONNECT>           Auto-connect to saved phone or specified phone MAC address if
                                       provided
     -d, --debug                       Enable debug info
+    -i, --interface                   Specify Wi-Fi Hotspot network interface
     -l, --legacy                      Enable legacy mode
     -h, --help                        Print help information
     -l, --logfile <LOGFILE>           Log file path [default: /var/log/aa-proxy-rs.log]

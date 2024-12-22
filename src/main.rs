@@ -64,6 +64,14 @@ struct Args {
         long
     )]
     udc: Option<String>,
+
+    /// WLAN / Wi-Fi Hotspot interface
+    #[clap(
+        short,
+        long,
+        default_value = "wlan0"
+    )]
+    iface: String,
     
 }
 
@@ -113,6 +121,7 @@ fn logging_init(debug: bool, log_path: &PathBuf) {
 async fn tokio_main(
     advertise: bool,
     legacy: bool,
+    iface: String,
     connect: Option<Address>,
     udc: Option<String>,
     need_restart: Arc<Notify>,
@@ -134,7 +143,7 @@ async fn tokio_main(
 
         let bt_stop;
         loop {
-            match bluetooth_setup_connection(advertise, connect, tcp_start.clone()).await {
+            match bluetooth_setup_connection(advertise, &iface, connect, tcp_start.clone()).await {
                 Ok(state) => {
                     // we're ready, gracefully shutdown bluetooth in task
                     bt_stop = tokio::spawn(async move { bluetooth_stop(state).await });
@@ -211,6 +220,7 @@ fn main() {
         tokio_main(
             args.advertise,
             args.legacy,
+            args.iface,
             args.connect,
             args.udc,
             need_restart,

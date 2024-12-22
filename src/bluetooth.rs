@@ -37,7 +37,6 @@ const HSP_HS_UUID: Uuid = Uuid::from_u128(0x0000110800001000800000805f9b34fb);
 const HSP_AG_UUID: Uuid = Uuid::from_u128(0x0000111200001000800000805f9b34fb);
 const BT_ALIAS: &str = "WirelessAADongle";
 
-const DEFAULT_WLAN_IFACE: &str = "wlan0";
 const DEFAULT_WLAN_ADDR: &str = "10.0.0.1";
 
 const HOSTAPD_FILE: &str = "/etc/hostapd/hostapd.conf";
@@ -338,6 +337,7 @@ pub async fn bluetooth_stop(state: BluetoothState) -> Result<()> {
 
 pub async fn bluetooth_setup_connection(
     advertise: bool,
+    iface: &str,
     connect: Option<Address>,
     tcp_start: Arc<Notify>,
 ) -> Result<BluetoothState> {
@@ -346,16 +346,16 @@ pub async fn bluetooth_setup_connection(
     let mut stage = 1;
     let mut started;
 
-    let mut wlan_iface = String::from(DEFAULT_WLAN_IFACE);
     let mut wlan_ip_addr = String::from(DEFAULT_WLAN_ADDR);
 
     let (state, mut stream) = power_up_and_wait_for_connection(advertise, connect).await?;
 
+    
     // Get UP interface and IP
     for ifa in netif::up().unwrap() {
         match ifa.name() {
-            DEFAULT_WLAN_IFACE => {
-                debug!("Found WLAN interface: {:?}", ifa);
+            val if val == iface => {
+                debug!("Found interface: {:?}", ifa);
                 // IPv4 Address contains None scope_id, while IPv6 contains Some
                 match ifa.scope_id() { None => {
                         wlan_ip_addr =  ifa.address().to_string();
@@ -391,7 +391,7 @@ pub async fn bluetooth_setup_connection(
     info.set_ssid(String::from(wlan_ssid));
     info.set_key(String::from(wlan_wpa_key));
     info!("{} 🛜 Sending Host SSID and Password: {}, {}", NAME, wlan_ssid, wlan_wpa_key);
-    let bssid = mac_address::mac_address_by_name(&wlan_iface)
+    let bssid = mac_address::mac_address_by_name(iface)
         .unwrap()
         .unwrap()
         .to_string();
