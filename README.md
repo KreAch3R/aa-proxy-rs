@@ -135,6 +135,7 @@ USAGE:
 
 OPTIONS:
     -a, --advertise                   BLE advertising
+    -b, --btalias                     Specify the BLE name of the device
     -c, --connect <CONNECT>           Auto-connect to saved phone or specified phone MAC address if
                                       provided
     -d, --debug                       Enable debug info

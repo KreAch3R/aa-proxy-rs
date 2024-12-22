@@ -72,6 +72,13 @@ struct Args {
         default_value = "wlan0"
     )]
     iface: String,
+
+     /// BLE device name
+    #[clap(
+        short,
+        long
+    )]
+    btalias: Option<String>,
     
 }
 
@@ -120,6 +127,7 @@ fn logging_init(debug: bool, log_path: &PathBuf) {
 
 async fn tokio_main(
     advertise: bool,
+    btalias: Option<String>,
     legacy: bool,
     iface: String,
     connect: Option<Address>,
@@ -143,7 +151,7 @@ async fn tokio_main(
 
         let bt_stop;
         loop {
-            match bluetooth_setup_connection(advertise, &iface, connect, tcp_start.clone()).await {
+            match bluetooth_setup_connection(advertise, btalias.clone(), &iface, connect, tcp_start.clone()).await {
                 Ok(state) => {
                     // we're ready, gracefully shutdown bluetooth in task
                     bt_stop = tokio::spawn(async move { bluetooth_stop(state).await });
@@ -219,6 +227,7 @@ fn main() {
     runtime.spawn(async move {
         tokio_main(
             args.advertise,
+            args.btalias,
             args.legacy,
             args.iface,
             args.connect,

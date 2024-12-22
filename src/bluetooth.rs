@@ -74,13 +74,23 @@ pub async fn get_cpu_serial_number_suffix() -> Result<String> {
 
 async fn power_up_and_wait_for_connection(
     advertise: bool,
+    btalias: Option<String>,
     connect: Option<Address>,
 ) -> Result<(BluetoothState, Stream)> {
     // setting BT alias for further use
-    let alias = match get_cpu_serial_number_suffix().await {
-        Ok(suffix) => format!("{}-{}", BT_ALIAS, suffix),
-        Err(_) => String::from(BT_ALIAS),
-    };
+    let alias: String;
+
+    match btalias {
+        None => {
+            alias = match get_cpu_serial_number_suffix().await {
+                Ok(suffix) => format!("{}-{}", BT_ALIAS, suffix),
+                Err(_) => String::from(BT_ALIAS),
+            };
+        }
+        Some(btalias) => {
+                alias = btalias;
+        }
+    }
     info!("{} 🥏 Bluetooth alias: <bold><green>{}</>", NAME, alias);
 
     let session = bluer::Session::new().await?;
@@ -337,6 +347,7 @@ pub async fn bluetooth_stop(state: BluetoothState) -> Result<()> {
 
 pub async fn bluetooth_setup_connection(
     advertise: bool,
+    btalias: Option<String>,
     iface: &str,
     connect: Option<Address>,
     tcp_start: Arc<Notify>,
@@ -348,7 +359,7 @@ pub async fn bluetooth_setup_connection(
 
     let mut wlan_ip_addr = String::from(DEFAULT_WLAN_ADDR);
 
-    let (state, mut stream) = power_up_and_wait_for_connection(advertise, connect).await?;
+    let (state, mut stream) = power_up_and_wait_for_connection(advertise, btalias, connect).await?;
 
     
     // Get UP interface and IP
