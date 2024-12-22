@@ -15,10 +15,12 @@ dependencies = [
  "kobject-uevent",
  "log",
  "mac_address",
+ "netif",
  "netlink-sys",
  "protobuf",
  "protobuf-codegen",
  "protoc-bin-vendored",
+ "simple_config_parser",
  "simplelog",
  "tokio",
  "tokio-fd",
@@ -747,6 +749,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "netif"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d29a01b9f018d6b7b277fef6c79fdbd9bf17bb2d1e298238055cafab49baa5ee"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
 name = "netlink-sys"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1161,6 +1173,12 @@ checksum = "a9e9e0b4211b72e7b8b6e85c807d36c212bdb33ea8587f7569562a84df5465b1"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "simple_config_parser"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d562b7cb7cef3d30257e59582674255342665ced8462ad861412e074c653b11"
 
 [[package]]
 name = "simplelog"

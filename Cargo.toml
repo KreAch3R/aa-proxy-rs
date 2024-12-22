@@ -27,6 +27,8 @@ simplelog = { version = "0.11.2", features = ["paris", "ansi_term"] }
 clap = { version = "3.0.13", features = ["derive"] }
 humantime = "2.1.0"
 log = "0.4.22"
+simple_config_parser = "1.0.0"
+netif = "0.1.6"
 
 [build-dependencies]
 protoc-bin-vendored = "3.1.0"
